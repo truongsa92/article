@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  test:
+    driver: bridge
+
+services:
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3308:3306"
+    networks:
+      - test
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9010:8080
+    depends_on:
+      - db
+    networks:
+      - test
+
+  api:
+    depends_on:
+      - db
+    build: .
+    volumes:
+      - ./:/home/article
+    restart: always
+    command: bash -c 'npm install && npm start'
+    ports:
+      - "3000:3000"
+    networks:
+      - test
+    env_file: .env
