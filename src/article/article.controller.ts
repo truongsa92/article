@@ -1,4 +1,4 @@
-import { Get, Post, Body, Query, Param, Controller } from '@nestjs/common';
+import { Get, Post, Body, Query, Param, Controller, ParseIntPipe } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiProperty, ApiParam } from "@nestjs/swagger";
 
 import { ArticleService } from './article.service';
@@ -19,13 +19,13 @@ export class ArticleController {
 
   @Get(':id')
   @ApiParam({name: 'id', type: Number, required: true })
-  async findOne(@Param('id') id): Promise<ArticleRO> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ArticleRO> {
     return await this.articleService.findOne({ id });
   }
 
   @Get(':articleId/comments')
   @ApiParam({name: 'articleId', type: Number, required: true })
-  async getComments(@Param('articleId') articleId): Promise<CommentsRO> {
+  async getComments(@Param('articleId', ParseIntPipe) articleId): Promise<CommentsRO> {
     return await this.articleService.getComments(articleId);
   }
 

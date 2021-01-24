@@ -80,6 +80,12 @@ export class ArticleService {
   }
 
   async getComments(articleId: number): Promise<CommentsRO> {
+    let article = await this.articleRepository.findOne({ id: articleId });
+    // check article exists
+    if (!article) {
+      throw new NotFoundException('Article not exists.');
+    }
+
     const commentLevel1 = await this.commentRepository.find({
       where: {
         article_id: articleId,

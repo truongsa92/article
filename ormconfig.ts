@@ -11,4 +11,3 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   synchronize: true,
   keepConnectionAlive: true
 };
-console.log(process.env.DB_PASS)
