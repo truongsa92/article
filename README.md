@@ -1,13 +1,14 @@
 # Getting started
-Switch to the repo folder
-    cd path-file-unzip/
+    git clone https://github.com/truongsa92/article.git
 
-Update file .env
+    cd article
 
-## Run 
+# Update file .env
+
+# Run
     docker-compose up 
 
-## Test
+# Test
     docker-compose exec api npm test
 
 
