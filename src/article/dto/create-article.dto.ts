@@ -1,5 +1,5 @@
-import { IsNotEmpty, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, MaxLength } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateArticleDto {
   @ApiProperty()
@@ -9,11 +9,11 @@ export class CreateArticleDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(1000)
+  @MaxLength(5000)
   content: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(50)
   nickname: string;
 }

@@ -1,6 +1,12 @@
-import { IsNotEmpty, MaxLength, Min, IsNumber, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  MaxLength,
+  Min,
+  IsNumber,
+  IsOptional,
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateCommentDto {
   @ApiPropertyOptional()
@@ -19,11 +25,11 @@ export class CreateCommentDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(5000)
+  @MaxLength(500)
   content: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(50)
   nickname: string;
 }
