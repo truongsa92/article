@@ -1,23 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-@Entity('comment')
+@Entity("comment")
 export class CommentEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   article_id: number;
 
-  @Column({ default: null})
+  @Column({ default: null })
   parent_id: number;
 
-  @Column()
+  @Column({ type: "text" })
   content: string;
 
   @Column()
   nickname: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 }
