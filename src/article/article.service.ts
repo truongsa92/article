@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getRepository, In } from 'typeorm';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, getRepository, In } from "typeorm";
 
-import { ArticleEntity } from './article.entity';
-import { CommentEntity } from './comment.entity';
-import { CreateArticleDto, FilterArticle, CreateCommentDto } from './dto';
-import { ArticlesRO, CommentsRO } from './article.interface';
-import { Const } from '../shares/common/const';
+import { ArticleEntity } from "./article.entity";
+import { CommentEntity } from "./comment.entity";
+import {
+  CreateArticleDto,
+  FilterArticle,
+  CreateCommentDto,
+  ArticleId,
+} from "./dto";
+import { ArticlesRO, CommentsRO } from "./article.interface";
+import { Const } from "../shares/common/const";
 
 @Injectable()
 export class ArticleService {
@@ -14,15 +19,14 @@ export class ArticleService {
     @InjectRepository(ArticleEntity)
     private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(CommentEntity)
-    private readonly commentRepository: Repository<CommentEntity>,
-  ) { }
+    private readonly commentRepository: Repository<CommentEntity>
+  ) {}
 
   async findAll(params: FilterArticle): Promise<ArticlesRO> {
     const { limit, offset } = params;
-
     const query = await getRepository(ArticleEntity)
-      .createQueryBuilder('article')
-      .orderBy('article.created', 'DESC');
+      .createQueryBuilder("article")
+      .orderBy("article.created", "DESC");
 
     const total = await query.getCount();
 
@@ -37,7 +41,7 @@ export class ArticleService {
     const article = await this.articleRepository.findOne(where);
     // check article exists
     if (!article) {
-      throw new NotFoundException('Article not exists.');
+      throw new NotFoundException("Article not exists.");
     } else {
       return { article };
     }
@@ -54,19 +58,20 @@ export class ArticleService {
   }
 
   async createComment(commentData: CreateCommentDto): Promise<CommentEntity> {
-    let article = await this.articleRepository.findOne({ id: commentData.article_id });
+    let article = await this.articleRepository.findOne({
+      id: commentData.article_id,
+    });
     // check article exists
     if (!article) {
-      throw new NotFoundException('Article not exists.');
+      throw new NotFoundException("Article not exists.");
     }
-
     // check comment is level 1 and exists
     if (commentData.parent_id) {
       let parent = await this.commentRepository.findOne({
         id: commentData.parent_id,
         parent_id: null,
       });
-      if (!parent) throw new NotFoundException('Comment not exists.');
+      if (!parent) throw new NotFoundException("Comment not exists.");
     }
 
     let comment = new CommentEntity();
@@ -74,41 +79,37 @@ export class ArticleService {
     comment.content = commentData.content;
     comment.parent_id = commentData.parent_id || null;
     comment.nickname = commentData.nickname;
-
     const newComment = await this.commentRepository.save(comment);
     return newComment;
   }
 
-  async getComments(articleId: number): Promise<CommentsRO> {
-    let article = await this.articleRepository.findOne({ id: articleId });
+  async getComments(id: ArticleId): Promise<CommentsRO> {
+    let article = await this.articleRepository.findOne(id);
     // check article exists
     if (!article) {
-      throw new NotFoundException('Article not exists.');
+      throw new NotFoundException("Article not exists.");
     }
-
     const commentLevel1 = await this.commentRepository.find({
       where: {
-        article_id: articleId,
-        parent_id: null
+        article_id: id.id,
+        parent_id: null,
       },
-      order: { created: 'DESC' }
+      order: { created: "DESC" },
     });
-
     if (commentLevel1.length > 0) {
-      let listId = commentLevel1.map(e => e.id);
+      let listId = commentLevel1.map((e) => e.id);
       const commentLevel2 = await this.commentRepository.find({
         where: {
-          parent_id: In(listId)
+          parent_id: In(listId),
         },
-        order: { parent_id: 'DESC', created: 'DESC' }
+        order: { parent_id: "DESC", created: "DESC" },
       });
 
-      commentLevel1.forEach(e => {
-        e['child'] = commentLevel2.filter(elm => elm['parent_id'] === e.id)
+      commentLevel1.forEach((e) => {
+        e["child"] = commentLevel2.filter((elm) => elm["parent_id"] === e.id);
       });
     }
 
-    return { comments: commentLevel1 }
+    return { comments: commentLevel1 };
   }
-
 }
