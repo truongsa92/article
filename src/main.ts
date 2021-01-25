@@ -20,6 +20,6 @@ async function bootstrap() {
   writeFileSync("./swagger.json", JSON.stringify(document));
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT);
+  await app.listen(3000);
 }
 bootstrap();
