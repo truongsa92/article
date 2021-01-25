@@ -21,7 +21,7 @@ export class ArticleService {
     @InjectRepository(CommentEntity)
     private readonly commentRepository: Repository<CommentEntity>
   ) {}
-
+  //service get list all articles
   async findAll(params: FilterArticle): Promise<ArticlesRO> {
     const { limit, offset } = params;
     const query = await getRepository(ArticleEntity)
@@ -36,7 +36,7 @@ export class ArticleService {
     const articles = await query.getMany();
     return { articles, total };
   }
-
+  //service get an articles content
   async findOne(where) {
     const article = await this.articleRepository.findOne(where);
     // check article exists
@@ -46,7 +46,7 @@ export class ArticleService {
       return { article };
     }
   }
-
+  //service create article
   async create(articleData: CreateArticleDto): Promise<ArticleEntity> {
     let article = new ArticleEntity();
     article.title = articleData.title;
@@ -56,7 +56,7 @@ export class ArticleService {
     const newArticle = await this.articleRepository.save(article);
     return newArticle;
   }
-
+  //service create comment and comment on a comment
   async createComment(commentData: CreateCommentDto): Promise<CommentEntity> {
     let article = await this.articleRepository.findOne({
       id: commentData.article_id,
@@ -82,13 +82,14 @@ export class ArticleService {
     const newComment = await this.commentRepository.save(comment);
     return newComment;
   }
-
+  //service get comment on an article
   async getComments(id: ArticleId): Promise<CommentsRO> {
     let article = await this.articleRepository.findOne(id);
     // check article exists
     if (!article) {
       throw new NotFoundException("Article not exists.");
     }
+    //get comment level 1
     const commentLevel1 = await this.commentRepository.find({
       where: {
         article_id: id.id,
@@ -96,6 +97,7 @@ export class ArticleService {
       },
       order: { created: "DESC" },
     });
+    //get comment level 2
     if (commentLevel1.length > 0) {
       let listId = commentLevel1.map((e) => e.id);
       const commentLevel2 = await this.commentRepository.find({
@@ -104,7 +106,7 @@ export class ArticleService {
         },
         order: { parent_id: "DESC", created: "DESC" },
       });
-
+      //assign comment level 2 to comment level 1
       commentLevel1.forEach((e) => {
         e["child"] = commentLevel2.filter((elm) => elm["parent_id"] === e.id);
       });

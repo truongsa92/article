@@ -23,31 +23,31 @@ import { ArticlesRO, ArticleRO, CommentsRO } from "./article.interface";
 @Controller("articles")
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
-
+  //get list all articles
   @Get()
   async findAll(@Query() query: FilterArticle): Promise<ArticlesRO> {
     return await this.articleService.findAll(query);
   }
-
+  //Api get an articles content
   @Get(":id")
   @ApiParam({ name: "id", type: ArticleId, required: true })
   async findOne(@Param() id: ArticleId): Promise<ArticleRO> {
     return await this.articleService.findOne(id);
   }
-
+  //Api get comment on an article
   @Get(":id/comments")
   @ApiParam({ name: "id", type: ArticleId, required: true })
   async getComments(@Param() id: ArticleId): Promise<CommentsRO> {
     return await this.articleService.getComments(id);
   }
-
+  //Api create article
   @Post()
   @ApiOperation({ operationId: "createArticle" })
   @ApiBody({ type: CreateArticleDto, required: true })
   async create(@Body() articleData: CreateArticleDto): Promise<ArticleEntity> {
     return this.articleService.create(articleData);
   }
-
+  //Api create comment and comment on a comment
   @Post("comments")
   @ApiOperation({ operationId: "createComment" })
   async createComment(
